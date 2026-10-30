@@ -1,0 +1,33 @@
+{
+  "id": "/",
+  "name": "AlienPay - Smart Crypto & INR Wallet",
+  "short_name": "AlienPay",
+  "description": "Secure multi-currency digital wallet with instant INR and USDT deposits, withdrawals, investment plans, and commissions.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050b14",
+  "theme_color": "#06b6d4",
+  "categories": ["finance", "business"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

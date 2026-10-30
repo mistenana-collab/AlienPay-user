@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, .dark, .dark *));
+
+@layer base {
+  /* Default Clean Professional Light Theme */
+  :root, [data-theme="light"] {
+    --app-bg-canvas: #e2e8f0;
+    --app-device-chassis: #cbd5e1;
+    --app-device-ring: rgba(13, 148, 136, 0.3);
+    --app-bg-main: #f8fafc;
+    --app-bg-gradient-top: #f0fdfa;
+    --app-bg-gradient-mid: #f8fafc;
+    --app-bg-gradient-bot: #f1f5f9;
+    
+    --app-surface: #ffffff;
+    --app-surface-elevated: #f0fdfa;
+    --app-surface-subtle: #f8fafc;
+    --app-surface-highlight: #ccfbf1;
+    
+    --app-header-bg: rgba(255, 255, 255, 0.95);
+    --app-nav-bg: rgba(255, 255, 255, 0.95);
+    --app-drawer-bg: #ffffff;
+    --app-drawer-card: #f0fdfa;
+    --app-soft-keys-bg: #e2e8f0;
+    
+    --app-border: rgba(13, 148, 136, 0.2);
+    --app-border-strong: rgba(13, 148, 136, 0.4);
+    --app-border-subtle: rgba(13, 148, 136, 0.1);
+    
+    --app-text-primary: #0f172a;
+    --app-text-secondary: #0f766e;
+    --app-text-muted: #334155;
+    --app-text-dim: #64748b;
+    --app-text-body: #1e293b;
+    
+    --app-input-bg: #f8fafc;
+    --app-input-border: rgba(13, 148, 136, 0.3);
+    --app-input-text: #0f172a;
+    --app-input-placeholder: rgba(100, 116, 139, 0.6);
+    
+    --app-card-gradient-from: #f0fdfa;
+    --app-card-gradient-to: #ffffff;
+    
+    --app-status-bar-bg: #ffffff;
+    --app-status-bar-text: #334155;
+    
+    --app-scrollbar-thumb: rgba(13, 148, 136, 0.3);
+    --app-shadow: rgba(15, 23, 42, 0.08);
+  }
+
+  /* Dark Theme Option */
+  :root[data-theme="dark"], [data-theme="dark"] {
+    --app-bg-canvas: #020b0a;
+    --app-device-chassis: #0a1615;
+    --app-device-ring: rgba(20, 184, 166, 0.3);
+    --app-bg-main: #041a18;
+    --app-bg-gradient-top: #041a18;
+    --app-bg-gradient-mid: #062420;
+    --app-bg-gradient-bot: #021413;
+    
+    --app-surface: #05221e;
+    --app-surface-elevated: #092e2a;
+    --app-surface-subtle: #031513;
+    --app-surface-highlight: #0b3833;
+    
+    --app-header-bg: rgba(4, 26, 24, 0.95);
+    --app-nav-bg: rgba(3, 21, 19, 0.95);
+    --app-drawer-bg: #041a18;
+    --app-drawer-card: #08302b;
+    --app-soft-keys-bg: #020d0c;
+    
+    --app-border: rgba(20, 184, 166, 0.25);
+    --app-border-strong: rgba(20, 184, 166, 0.5);
+    --app-border-subtle: rgba(20, 184, 166, 0.12);
+    
+    --app-text-primary: #ffffff;
+    --app-text-secondary: #5eead4;
+    --app-text-muted: #2dd4bfcc;
+    --app-text-dim: #94a3b8;
+    --app-text-body: #cbd5e1;
+    
+    --app-input-bg: #031513;
+    --app-input-border: rgba(20, 184, 166, 0.35);
+    --app-input-text: #ffffff;
+    --app-input-placeholder: rgba(45, 212, 191, 0.4);
+    
+    --app-card-gradient-from: #092e2a;
+    --app-card-gradient-to: #051f1c;
+    
+    --app-status-bar-bg: #041a18;
+    --app-status-bar-text: #cbd5e1;
+    
+    --app-scrollbar-thumb: rgba(6, 182, 212, 0.3);
+    --app-shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--app-bg-canvas);
+    color: var(--app-text-primary);
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Custom smooth scrollbar using CSS variables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--app-bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--app-scrollbar-thumb);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--app-border-strong);
+}
+
+/* Safe area support for mobile devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0.5rem);
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Marquee animation for announcement ticker */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 18s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
