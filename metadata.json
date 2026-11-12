@@ -1,0 +1,6 @@
+{
+  "name": "AlienPay",
+  "description": "AlienPay Android Fintech App with Dual INR & USDT Wallet, Authentication, Plans, and Material Design UI",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
