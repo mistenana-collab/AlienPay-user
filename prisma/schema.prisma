@@ -1,0 +1,163 @@
+// Prisma Schema for AlienPay / CryptoFD
+// PostgreSQL database on Render (DATABASE_URL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User profile with balance and referral info
+model Profile {
+  id                 String    @id @default(uuid())
+  alienPayId         String?   @map("alien_pay_id")
+  email              String    @unique
+  passwordHash       String    @map("password_hash")
+  name               String?
+  phone              String?
+  countryCode        String?   @default("+91") @map("country_code")
+  profilePhoto       String?   @map("profile_photo") @db.Text
+  referralCode       String    @unique @default(uuid()) @map("referral_code")
+  referredBy         String?   @map("referred_by")
+  walletBalance      Decimal   @default(0) @map("wallet_balance") @db.Decimal(18, 6)
+  lockedBalance      Decimal   @default(0) @map("locked_balance") @db.Decimal(18, 6)
+  totalEarnings      Decimal   @default(0) @map("total_earnings") @db.Decimal(18, 6)
+  referralEarnings   Decimal   @default(0) @map("referral_earnings") @db.Decimal(18, 6)
+  usdtAddress        String?   @map("usdt_address")
+  securityPin        String?   @default("1234") @map("security_pin")
+  activePlanId       String?   @map("active_plan_id")
+  planName           String?   @default("Inactive") @map("plan_name")
+  planStatus         String?   @default("inactive") @map("plan_status")
+  isAdmin            Boolean   @default(false) @map("is_admin")
+  isVerified         Boolean   @default(false) @map("is_verified")
+  withdrawalDisabled Boolean   @default(false) @map("withdrawal_disabled")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // OTP for email verification
+  otpCode            String?   @map("otp_code")
+  otpExpiresAt       DateTime? @map("otp_expires_at")
+
+  // Relations
+  transactions        Transaction[]
+  wallets             Wallet[]
+  withdrawalRequests  WithdrawalRequest[]
+  sweepTasks          SweepTask[]
+  referralsAsReferrer Referral[]          @relation("ReferrerRelation")
+  referralsAsReferred Referral[]          @relation("ReferredRelation")
+
+  @@map("profiles")
+}
+
+// Transaction history
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // deposit, withdrawal, fd_investment, fd_earning, referral_commission, referral_earning, cold_sweep
+  amount      Decimal  @db.Decimal(18, 6)
+  status      String   @default("completed") // pending, completed, failed
+  txHash      String?  @map("tx_hash")
+  logIndex    Int?     @map("log_index")
+  description String?
+  referenceId String?  @map("reference_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([txHash, logIndex])
+  @@map("transactions")
+}
+
+// Referral relationships (3-level: Level 1 = 10%, Level 2 = 5%, Level 3 = 2%)
+model Referral {
+  id         String   @id @default(uuid())
+  referrerId String   @map("referrer_id")
+  referredId String   @map("referred_id")
+  level      Int      // 1, 2, or 3
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  referrer Profile @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred Profile @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: Cascade)
+
+  @@unique([referrerId, referredId])
+  @@map("referrals")
+}
+
+// HD Wallet derived addresses for BEP-20 USDT deposits (m/44'/60'/0'/0/index)
+model Wallet {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  address         String   @unique
+  derivationIndex Int      @unique @map("derivation_index")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("wallets")
+}
+
+// Sweep tasks for sending BNB gas and sweeping user BEP-20 deposits to Hot Wallet
+model SweepTask {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  address         String
+  walletAddress   String   @map("wallet_address")
+  amount          Decimal  @db.Decimal(18, 6)
+  derivationIndex Int      @map("derivation_index")
+  txHash          String?  @map("tx_hash")
+  status          String   @default("pending") // pending, gas_sent, sweeping, completed, failed
+  gasTxHash       String?  @map("gas_tx_hash")
+  sweepTxHash     String?  @map("sweep_tx_hash")
+  errorMessage    String?  @map("error_message")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sweep_tasks")
+}
+
+// Withdrawal requests processed by Hot Wallet
+model WithdrawalRequest {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  amount       Decimal   @db.Decimal(18, 6)
+  toAddress    String    @map("to_address")
+  status       String    @default("pending") // pending, processing, completed, failed
+  txHash       String?   @map("tx_hash")
+  errorMessage String?   @map("error_message")
+  processedAt  DateTime? @map("processed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("withdrawal_requests")
+}
+
+// Session tokens for JWT auth
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sessions")
+}
+
+// Block tracker for BSC deposit scanning
+model BlockTracker {
+  chain     String   @id
+  lastBlock Int      @map("last_block")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("block_tracker")
+}

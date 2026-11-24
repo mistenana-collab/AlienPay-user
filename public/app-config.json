@@ -1,0 +1,12 @@
+{
+  "app_url": "https://alienpay-user-vc9u.onrender.com/?apk=1",
+  "admin_url": "https://alienpay-user-vc9u.onrender.com/admin?mode=admin&apk=1",
+  "backup_urls": [
+    "https://alienpay-user-vc9u.onrender.com/?apk=1",
+    "https://alienpay-user.onrender.com/?apk=1"
+  ],
+  "backup_admin_urls": [
+    "https://alienpay-user-vc9u.onrender.com/admin?mode=admin&apk=1",
+    "https://alienpay-user.onrender.com/admin?mode=admin&apk=1"
+  ]
+}
